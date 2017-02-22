@@ -1,0 +1,22 @@
+{
+  "name": "ensphere-embargo",
+  "description": "Overrides default styling and javascript helpers for ensphere front",
+  "main": "",
+  "authors": [
+    "Luke Snowden",
+    "Tim Lenton"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/ensphere/embargo",
+  "private": true,
+  "dependencies" : {
+
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
