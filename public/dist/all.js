@@ -54,6 +54,7 @@ $.fn.ensphere = new function() {
                     guid : _guid
                 });
             });
+            if( ! methods.length ) return;
             $.get( '/api/render', { actions : methods }, function( responses ) {
                 for( var i in responses ) {
                     if( typeof window[responses[i].callback] !== 'undefined' ) {
