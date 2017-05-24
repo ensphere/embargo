@@ -17,7 +17,7 @@ $.fn.ensphere = new function() {
         var guid = function()
         {
             return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-        }
+        };
 
         /**
          * S4
@@ -26,7 +26,7 @@ $.fn.ensphere = new function() {
         var s4 = function()
         {
             return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-        }
+        };
 
         /**
          * Remove Page Loader
@@ -41,6 +41,9 @@ $.fn.ensphere = new function() {
             }
         };
 
+        /**
+         * Distribute Api Requests
+         */
         var distributeApiRequests = function()
         {
             var methods = [];
@@ -50,7 +53,7 @@ $.fn.ensphere = new function() {
                 methods.push({
                     method : $(this).attr( 'data-api' ),
                     callback : $(this).attr( 'data-api-callback' ),
-                    modelId : parseInt( $(this).attr( 'data-model-id' ) ),
+                    modelId : $(this).attr( 'data-model-id' ),
                     guid : _guid
                 });
             });
@@ -66,11 +69,73 @@ $.fn.ensphere = new function() {
             });
         };
 
+        /**
+         * Responsive Images
+         */
+        var responsiveImages = function()
+        {
+
+            var parser = document.createElement('a');
+            var width = $(window).width();
+            var onLoadBreakPoint = 0;
+            var selectedBreakPoints = [ 1500, 1200, 992, 768, 480 ];
+
+            /**
+             * Get Break Point
+             * @returns {number}
+             */
+            var getBreakPoint = function()
+            {
+                var breakPoint = 0;
+                selectedBreakPoints.forEach( function ( point ) {
+                    if( width >= point && ! breakPoint ) {
+                        breakPoint = point;
+                    }
+                });
+                return breakPoint;
+            };
+
+            /**
+             * Reload THe Images
+             */
+            window.reloadImages = function()
+            {
+                $('[data-responsive]').each( function() {
+                    parser.href = $(this).attr( 'src' );
+                    $(this).attr( 'src', parser.pathname + ( onLoadBreakPoint ? '?r=' + onLoadBreakPoint : '' ) );
+                });
+            };
+
+            /**
+             * Resize Handler
+             */
+            window.onWindowResizeHandleImageSizes = function()
+            {
+                width = $(window).width();
+                var newBreakPoint = parseInt( getBreakPoint() );
+                if( newBreakPoint !== onLoadBreakPoint ) {
+                    onLoadBreakPoint = newBreakPoint;
+                    reloadImages();
+                }
+            };
+
+            $(window).on( 'resize.responsive', onWindowResizeHandleImageSizes );
+            window.onWindowResizeHandleImageSizes();
+
+        };
+
+        /**
+         * On Document Ready
+         */
         var onDocumentReady = function()
         {
             distributeApiRequests();
+            responsiveImages();
         };
 
+        /**
+         * On Window Load
+         */
         var onWindowLoad = function()
         {
             removePageLoader();
@@ -81,5 +146,6 @@ $.fn.ensphere = new function() {
 
     };
 };
+
 
 //# sourceMappingURL=all.js.map
