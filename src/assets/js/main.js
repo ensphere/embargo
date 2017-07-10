@@ -58,7 +58,7 @@ $.fn.ensphere = new function() {
                 });
             });
             if( ! methods.length ) return;
-            $.get( '/api/render', { actions : methods }, function( responses ) {
+            $.get( '/api/render', { actions : methods, from : window.location.href }, function( responses ) {
                 for( var i in responses ) {
                     if( typeof window[responses[i].callback] !== 'undefined' ) {
                         window[responses[i].callback](responses[i].response, $('[data-guid="' + responses[i].guid + '"]') );
