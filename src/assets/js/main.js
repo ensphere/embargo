@@ -50,12 +50,16 @@ $.fn.ensphere = new function() {
             $('[data-api]').each( function(){
                 var _guid = guid();
                 $(this).attr( 'data-guid', _guid );
-                methods.push({
+                var _data = {
                     method : $(this).attr( 'data-api' ),
                     callback : $(this).attr( 'data-api-callback' ),
                     modelId : $(this).attr( 'data-model-id' ),
                     guid : _guid
-                });
+                };
+                if( $(this).attr( 'data-api-data' ) ) {
+                    _data.data = $(this).attr( 'data-api-data' );
+                }
+                methods.push( _data );
             });
             if( ! methods.length ) return;
             $.get( '/api/render', { actions : methods, from : window.location.href }, function( responses ) {
