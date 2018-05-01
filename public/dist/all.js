@@ -133,12 +133,14 @@ $.fn.ensphere = new function() {
          */
         var ajaxSetup = function()
         {
-            var _token = $('[name="csrf-token"]').attr( 'content' );
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-Token': _token
-                }
-            });
+            var _token = $('[name="csrf-token"]');
+            if( _token.length ) {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-Token': _token.attr( 'content' )
+                    }
+                });
+            }
         };
 
         /**
