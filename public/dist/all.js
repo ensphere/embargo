@@ -129,12 +129,26 @@ $.fn.ensphere = new function() {
         };
 
         /**
+         * Sets up ajax calls
+         */
+        var ajaxSetup = function()
+        {
+            var _token = $('[name="csrf-token"]').attr( 'content' );
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-Token': _token
+                }
+            });
+        };
+
+        /**
          * On Document Ready
          */
         var onDocumentReady = function()
         {
             distributeApiRequests();
             responsiveImages();
+            ajaxSetup();
         };
 
         /**
