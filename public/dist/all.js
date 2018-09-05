@@ -4,6 +4,31 @@
  */
 $.fn.ensphere = new function() {
 
+    var routes = null;
+
+    var loadJSON = function( path, success, error )
+    {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function()
+        {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    if (success)
+                        success(JSON.parse(xhr.responseText));
+                } else {
+                    if (error)
+                        error(xhr);
+                }
+            }
+        };
+        xhr.open( "GET", path, true );
+        xhr.send();
+    };
+
+    loadJSON( window.routesUrl ? window.routesUrl : '/routes.json', function( data ) {
+        routes = data;
+    });
+
     /**
      *
      * @type {embargo}
@@ -164,35 +189,43 @@ $.fn.ensphere = new function() {
         $(document).ready( onDocumentReady );
         $(window).load( onWindowLoad );
 
-        var routes = null;
-
         var getRouter = function( name, callback )
         {
-            if( routes === null ) {
-                $.get( '/routes.json', function( response ) {
-                    routes = response;
-                    getRouter( name, callback );
-                });
+            if( typeof routes[ name ] !== 'undefined' ) {
+                return callback( routes[ name ] );
             } else {
-                if( typeof routes[ name ] !== 'undefined' ) {
-                    callback( routes[ name ] );
-                } else {
-                    console.log( 'route [' + name + '] does not exist' );
-                }
+                console.log( 'route [' + name + '] does not exist' );
             }
         };
 
+        /**
+         * Generate Route Uri
+         * @param router
+         * @param _parameters
+         * @returns {string}
+         */
+        var generateRouteUri = function( router, _parameters )
+        {
+            var parameters = _parameters || [];
+            router.uri_variables.forEach( function( variable ) {
+                var replaceWith = parameters.shift() || null;
+                router.path = router.path.replace( '{' + variable + '}', replaceWith );
+            });
+            return '/' + router.path;
+        };
+
         return {
+
             route : function( name, parameters )
             {
-                getRouter( name, function ( router ) {
-                    console.log( router );
+                return getRouter( name, function ( router ) {
+                    return generateRouteUri( router, parameters );
                 });
             }
+
         }
 
     };
 };
-
 
 //# sourceMappingURL=all.js.map
