@@ -164,6 +164,33 @@ $.fn.ensphere = new function() {
         $(document).ready( onDocumentReady );
         $(window).load( onWindowLoad );
 
+        var routes = null;
+
+        var getRouter = function( name, callback )
+        {
+            if( routes === null ) {
+                $.get( '/routes.json', function( response ) {
+                    routes = response;
+                    getRouter( name, callback );
+                });
+            } else {
+                if( typeof routes[ name ] !== 'undefined' ) {
+                    callback( routes[ name ] );
+                } else {
+                    console.log( 'route [' + name + '] does not exist' );
+                }
+            }
+        };
+
+        return {
+            route : function( name, parameters )
+            {
+                getRouter( name, function ( router ) {
+                    console.log( router );
+                });
+            }
+        }
+
     };
 };
 
