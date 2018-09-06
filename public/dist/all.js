@@ -55,12 +55,13 @@ var LaravelRoutes = new function() {
     var generateRouteUri = function( router, _parameters )
     {
         var parameters = _parameters || [];
+        router.uri = router.path;
         router.uri_variables.forEach( function( variable ) {
             var replaceWith = parameters.shift() || null;
             var rExpression = new RegExp( "{" + variable + "\\??}", "g" );
-            router.path = router.path.replace( rExpression, replaceWith );
+            router.uri = router.uri.replace( rExpression, replaceWith );
         });
-        return '/' + router.path;
+        return '/' + router.uri;
     };
 
     loadJSON( window.routesUrl ? window.routesUrl : '/routes.json', function( data ) {
