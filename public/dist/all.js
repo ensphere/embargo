@@ -27,7 +27,7 @@ var LaravelRoutes = new function() {
                 }
             }
         };
-        xhr.open( "GET", path, true );
+        xhr.open( "GET", path, false );
         xhr.send();
     };
 
@@ -57,7 +57,8 @@ var LaravelRoutes = new function() {
         var parameters = _parameters || [];
         router.uri_variables.forEach( function( variable ) {
             var replaceWith = parameters.shift() || null;
-            router.path = router.path.replace( '{' + variable + '}', replaceWith );
+            var rExpression = new RegExp( "{" + variable + "\\??}", "g" );
+            router.path = router.path.replace( rExpression, replaceWith );
         });
         return '/' + router.path;
     };
