@@ -1,11 +1,17 @@
-
 /**
- * Ensphere Container
+ * Laravel Routes
+ * @type {{route}}
  */
-$.fn.ensphere = new function() {
+var LaravelRoutes = new function() {
 
     var routes = null;
 
+    /**
+     * Load JSON
+     * @param path
+     * @param success
+     * @param error
+     */
     var loadJSON = function( path, success, error )
     {
         var xhr = new XMLHttpRequest();
@@ -25,9 +31,57 @@ $.fn.ensphere = new function() {
         xhr.send();
     };
 
+    /**
+     * Get Router
+     * @param name
+     * @param callback
+     * @returns {*}
+     */
+    var getRouter = function( name, callback )
+    {
+        if( typeof routes[ name ] !== 'undefined' ) {
+            return callback( routes[ name ] );
+        } else {
+            console.log( 'route [' + name + '] does not exist' );
+        }
+    };
+
+    /**
+     * Generate Route Uri
+     * @param router
+     * @param _parameters
+     * @returns {string}
+     */
+    var generateRouteUri = function( router, _parameters )
+    {
+        var parameters = _parameters || [];
+        router.uri_variables.forEach( function( variable ) {
+            var replaceWith = parameters.shift() || null;
+            router.path = router.path.replace( '{' + variable + '}', replaceWith );
+        });
+        return '/' + router.path;
+    };
+
     loadJSON( window.routesUrl ? window.routesUrl : '/routes.json', function( data ) {
         routes = data;
     });
+
+    return {
+        route : function( name, parameters )
+        {
+            return getRouter( name, function ( router ) {
+                return generateRouteUri( router, parameters );
+            });
+        }
+    }
+
+};
+
+
+/**
+ * Ensphere Container
+ */
+$.fn.ensphere = new function() {
 
     /**
      *
@@ -189,38 +243,11 @@ $.fn.ensphere = new function() {
         $(document).ready( onDocumentReady );
         $(window).load( onWindowLoad );
 
-        var getRouter = function( name, callback )
-        {
-            if( typeof routes[ name ] !== 'undefined' ) {
-                return callback( routes[ name ] );
-            } else {
-                console.log( 'route [' + name + '] does not exist' );
-            }
-        };
-
-        /**
-         * Generate Route Uri
-         * @param router
-         * @param _parameters
-         * @returns {string}
-         */
-        var generateRouteUri = function( router, _parameters )
-        {
-            var parameters = _parameters || [];
-            router.uri_variables.forEach( function( variable ) {
-                var replaceWith = parameters.shift() || null;
-                router.path = router.path.replace( '{' + variable + '}', replaceWith );
-            });
-            return '/' + router.path;
-        };
-
         return {
 
             route : function( name, parameters )
             {
-                return getRouter( name, function ( router ) {
-                    return generateRouteUri( router, parameters );
-                });
+                return LaravelRoutes.route( name, parameters );
             }
 
         }
