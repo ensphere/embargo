@@ -186,8 +186,17 @@ $.fn.ensphere = new function() {
             window.reloadImages = function()
             {
                 $('[data-responsive]').each( function() {
-                    parser.href = $(this).attr( 'src' );
-                    $(this).attr( 'src', parser.pathname + ( onLoadBreakPoint ? '?r=' + onLoadBreakPoint : '' ) );
+                    if( $( this ).prop( 'tagName' ).toLowerCase() === 'img' ) {
+                        parser.href = $( this ).attr( 'src' );
+                        $( this ).attr( 'src', parser.pathname + ( onLoadBreakPoint ? '?r=' + onLoadBreakPoint : '' ) );
+                    } else {
+                        var img = $( this ).css( 'background-image' ).replace( /(url\(|\)|")/g, '' );
+                        if( img ) {
+                            parser.href = img;
+                            var url = String( parser.pathname + ( onLoadBreakPoint ? '?r=' + onLoadBreakPoint : '' ) );
+                            $( this ).css( 'background-image', 'url(' + url + ')' );
+                        }
+                    }
                 });
             };
 
