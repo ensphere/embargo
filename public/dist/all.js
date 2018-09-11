@@ -190,11 +190,14 @@ $.fn.ensphere = new function() {
                         parser.href = $( this ).attr( 'src' );
                         $( this ).attr( 'src', parser.pathname + ( onLoadBreakPoint ? '?r=' + onLoadBreakPoint : '' ) );
                     } else {
-                        var img = $( this ).css( 'background-image' ).replace( /(url\(|\)|")/g, '' );
+
+                        var img = $( this ).get(0);
+                        var style = img.currentStyle || window.getComputedStyle( img, false );
+                        img = style.backgroundImage.slice( 4, -1 ).replace( /"/g, "" ).replace( /'/g, "" );
                         if( img ) {
                             parser.href = img;
                             var url = String( parser.pathname + ( onLoadBreakPoint ? '?r=' + onLoadBreakPoint : '' ) );
-                            $( this ).css( 'background-image', 'url(' + url + ')' );
+                            $( this ).css( 'background-image', 'url("' + url + '")' );
                         }
                     }
                 });
